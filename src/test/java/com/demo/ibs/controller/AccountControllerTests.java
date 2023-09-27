@@ -1,7 +1,7 @@
 package com.demo.ibs.controller;
 
+import com.demo.ibs.dto.AccountDto;
 import com.demo.ibs.dto.MoneyTransferDto;
-import com.demo.ibs.model.Account;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
@@ -145,8 +145,8 @@ class AccountControllerTests {
     @DirtiesContext
     // causes Spring to start with a clean slate, as if other tests hadn't been run. The created object in this method will be removed
     void shouldCreateNewAccount() {
-        final Account account = new Account(null, BigDecimal.valueOf(120000.00), null);
-        final ResponseEntity<Void> postResponse = restTemplate.postForEntity("/accounts/1", account, Void.class);
+        final AccountDto account = new AccountDto(BigDecimal.valueOf(120000.00), BigInteger.valueOf(1));
+        final ResponseEntity<Void> postResponse = restTemplate.postForEntity("/accounts", account, Void.class);
         final URI location = postResponse.getHeaders().getLocation();
         final ResponseEntity<String> getResponse = restTemplate.getForEntity(location, String.class);
 
