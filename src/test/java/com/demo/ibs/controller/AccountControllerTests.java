@@ -142,8 +142,7 @@ class AccountControllerTests {
      * Create new account test
      */
     @Test
-    @DirtiesContext
-    // causes Spring to start with a clean slate, as if other tests hadn't been run. The created object in this method will be removed
+    @DirtiesContext // causes Spring to start with a clean slate, as if other tests hadn't been run. The created object in this method will be removed
     void shouldCreateNewAccount() {
         final AccountDto account = new AccountDto(BigDecimal.valueOf(120000.00), BigInteger.valueOf(1));
         final ResponseEntity<Void> postResponse = restTemplate.postForEntity("/accounts", account, Void.class);
@@ -169,8 +168,7 @@ class AccountControllerTests {
      * Update account tests
      */
     @Test
-    @DirtiesContext
-    // causes Spring to start with a clean slate, as if other tests hadn't been run. The created object in this method will be removed
+    @DirtiesContext // causes Spring to start with a clean slate, as if other tests hadn't been run. The created object in this method will be removed
     void shouldUpdateAnExistingAccount() {
         final MoneyTransferDto moneyTransferDto = new MoneyTransferDto(BigInteger.valueOf(1), BigInteger.valueOf(2), BigDecimal.valueOf(50000));
         final HttpEntity<MoneyTransferDto> entity = new HttpEntity<>(moneyTransferDto);

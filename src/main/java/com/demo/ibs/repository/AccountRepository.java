@@ -13,7 +13,7 @@ import java.util.Set;
 public interface AccountRepository extends JpaRepository<Account, BigInteger>, PagingAndSortingRepository<Account, BigInteger> {
 
     @Query("select a from Account a join a.customer c where c.id = :id")
-    Set<Account> findAccountByCustomerId(final BigInteger id);
+    Set<Account> findAccountsByCustomerId(final BigInteger id);
 
     @Modifying
     @Query("update Account a set a.amount = :amount where a.id = :id")
