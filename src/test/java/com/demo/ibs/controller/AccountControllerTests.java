@@ -35,46 +35,55 @@ class AccountControllerTests {
     @Test
     void shouldReturnAPageOfAccount() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/accounts?page=0&size=1", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         final DocumentContext documentContext = JsonPath.parse(response.getBody());
         final JSONArray page = documentContext.read("$[*]");
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(page).hasSize(1);
     }
 
     @Test
     void shouldReturnSortedDescendingPageOfAccounts() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/accounts?page=0&size=1&sort=amount,desc", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final Double amount = documentContext.read("$[0].amount");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(1);
+
+        final Double amount = documentContext.read("$[0].amount");
         assertThat(amount).isEqualTo(500000.00);
     }
 
     @Test
     void shouldReturnSortedAscendingPageOfAccounts() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/accounts?page=0&size=1&sort=amount,asc", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final Double amount = documentContext.read("$[0].amount");
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(1);
+
+        final Double amount = documentContext.read("$[0].amount");
         assertThat(amount).isEqualTo(100000.00);
     }
 
     @Test
     void shouldReturnASortedPageOfAccountsWithNoParametersAndUseDefaultValues() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/accounts", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final JSONArray amounts = documentContext.read("$..amount");
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(3);
+
+        final JSONArray amounts = documentContext.read("$..amount");
         assertThat(amounts).containsExactly(100000.00, 200000.00, 500000.00);
     }
 
@@ -146,10 +155,12 @@ class AccountControllerTests {
     void shouldCreateNewAccount() {
         final AccountDto account = new AccountDto(BigDecimal.valueOf(120000.00), BigInteger.valueOf(1));
         final ResponseEntity<Void> postResponse = restTemplate.postForEntity("/accounts", account, Void.class);
+
+        assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
         final URI location = postResponse.getHeaders().getLocation();
         final ResponseEntity<String> getResponse = restTemplate.getForEntity(location, String.class);
 
-        assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // converts response String into a JSON-aware object
@@ -174,10 +185,12 @@ class AccountControllerTests {
         final HttpEntity<MoneyTransferDto> entity = new HttpEntity<>(moneyTransferDto);
         final ResponseEntity<Void> putResponse = restTemplate
                 .exchange("/accounts/transfer", HttpMethod.PUT, entity, Void.class);
+
+        assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
         final ResponseEntity<String> getSenderAccountResponse = restTemplate.getForEntity("/accounts/1", String.class);
         final ResponseEntity<String> getReceiverAccountResponse = restTemplate.getForEntity("/accounts/2", String.class);
 
-        assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(getSenderAccountResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(getReceiverAccountResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 

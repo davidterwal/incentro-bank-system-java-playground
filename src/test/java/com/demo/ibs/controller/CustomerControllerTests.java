@@ -30,46 +30,53 @@ class CustomerControllerTests {
     @Test
     void shouldReturnAPageOfCustomer(){
         final ResponseEntity<String> response = template.getForEntity("/customers?page=0&size=1", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(1);
     }
 
     @Test
     void shouldReturnSortedDescendingPageOfCustomers(){
         final ResponseEntity<String> response = template.getForEntity("/customers?page=0&size=1&sort=name,desc", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final String name = documentContext.read("$[0].name");
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(1);
+
+        final String name = documentContext.read("$[0].name");
         assertThat(name).isEqualTo("Marcel Peereboom");
     }
 
     @Test
     void shouldReturnSortedAscendingPageOfCustomers(){
         final ResponseEntity<String> response = template.getForEntity("/customers?page=0&size=1&sort=name,asc", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final String name = documentContext.read("$[0].name");
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(1);
+
+        final String name = documentContext.read("$[0].name");
         assertThat(name).isEqualTo("David ter Wal");
     }
 
     @Test
     void shouldReturnASortedPageOfCustomersWithNoParametersAndUseDefaultValues(){
         final ResponseEntity<String> response = template.getForEntity("/customers", String.class);
-        final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final JSONArray page = documentContext.read("$[*]");
-        final List<String> names = documentContext.read("$..name");
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+        final JSONArray page = documentContext.read("$[*]");
         assertThat(page).hasSize(2);
+
+        final List<String> names = documentContext.read("$..name");
         assertThat(names).containsExactly("David ter Wal", "Marcel Peereboom");
     }
 
@@ -79,7 +86,6 @@ class CustomerControllerTests {
     @Test
     void shouldReturnCustomerWhenDataIsSaved(){
         final ResponseEntity<String> response = template.getForEntity("/customers/1", String.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // converts response String into a JSON-aware object
@@ -112,10 +118,11 @@ class CustomerControllerTests {
     void shouldCreateNewCustomer(){
         final Customer customer = new Customer(null, "Hans Timmerman", null);
         final ResponseEntity<Void> postResponse = template.postForEntity("/customers", customer, Void.class);
-        final URI location = postResponse.getHeaders().getLocation();
-        final ResponseEntity<String> getResponse = template.getForEntity(location, String.class);
-
         assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        final URI location = postResponse.getHeaders().getLocation();
+
+        final ResponseEntity<String> getResponse = template.getForEntity(location, String.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // converts response String into a JSON-aware object
